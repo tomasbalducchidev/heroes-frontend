@@ -1,1 +1,11 @@
-<p>button works!</p>
+@if (iconOnly()) {
+<button
+  (click)="handleClick()"
+  mat-mini-fab
+  aria-label="Example icon button with a menu icon"
+>
+  <mat-icon>{{ icon() }}</mat-icon>
+</button>
+} @else {
+<button (click)="handleClick()" mat-raised-button>{{ buttonText() }}</button>
+}
