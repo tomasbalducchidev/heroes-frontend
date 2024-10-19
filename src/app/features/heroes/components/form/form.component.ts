@@ -6,11 +6,12 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { Subscription } from 'rxjs';
+import { UpperCaseDirective } from '../../../../directives/upper-case.directive';
 
 @Component({
   selector: 'app-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, MatButtonModule, MatInputModule],
+  imports: [ReactiveFormsModule, ButtonComponent, MatButtonModule, MatInputModule, UpperCaseDirective],
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
