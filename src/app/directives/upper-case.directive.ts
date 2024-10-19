@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { Directive, ElementRef, HostListener } from '@angular/core';
 
 @Directive({
   selector: '[appUpperCase]',
@@ -6,6 +6,12 @@ import { Directive } from '@angular/core';
 })
 export class UpperCaseDirective {
 
-  constructor() { }
+  constructor(private el: ElementRef) { }
+
+  @HostListener('input', ['$event']) onInput(event: Event): void {
+    const input = this.el.nativeElement as HTMLInputElement;
+    input.value = input.value.toUpperCase();
+  }
+
 
 }
