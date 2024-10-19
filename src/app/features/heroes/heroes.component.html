@@ -1,7 +1,75 @@
 <div>
-  <div class="actions-container">
+  <div class="filter-container">
     <app-heroes-filter></app-heroes-filter>
-    <app-button></app-button>
+    <div class="filter-container__button">
+      <app-button
+        [buttonText]="'Crear héroe'"
+        (handleClickEvent)="openFormModal('create')"
+      ></app-button>
+    </div>
   </div>
-  <div>HEROES</div>
+  <div>
+    <div class="example-container mat-elevation-z8">
+      <!-- @if (isLoadingResults || isRateLimitReached) {
+      <div class="example-loading-shade">
+        @if (isLoadingResults) {
+        <mat-spinner></mat-spinner>
+        } @if (isRateLimitReached) {
+        <div class="example-rate-limit-reached">
+          GitHub's API rate limit has been reached. It will be reset in one
+          minute.
+        </div>
+        }
+      </div>
+      } -->
+
+      <div class="example-container__example-table-container">
+        <table mat-table [dataSource]="data" class="example-table">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th class="actions-header-cell" mat-header-cell *matHeaderCellDef>
+              Acciones
+            </th>
+            <td class="actions-cell" mat-cell *matCellDef="let row">
+              <div class="actions-cell__actions">
+                <app-button
+                  (handleClickEvent)="openFormModal('update', row)"
+                  [iconOnly]="true"
+                  [icon]="'edit'"
+                ></app-button>
+                <app-button
+                  (handleClickEvent)="
+                    openDeleteModal(
+                      '¿Está seguro que desea borrar el Superhéroe?',
+                      row
+                    )
+                  "
+                  [iconOnly]="true"
+                  [icon]="'delete'"
+                ></app-button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [hidePageSize]="true"
+        [length]="17"
+        aria-label="Select page of Heroes list"
+      ></mat-paginator>
+    </div>
+  </div>
 </div>

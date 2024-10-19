@@ -1,7 +1,33 @@
 @import "colors";
 
-.actions-container {
+.filter-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  &__button {
+    margin-bottom: 20px;
+  }
+}
+
+.example-container {
+  height: 60vh;
+
+  &__example-table-container {
+    position: relative;
+    min-height: 200px;
+    max-height: 100%;
+    overflow: auto;
+  }
+}
+
+.actions-header-cell,
+.actions-cell {
+  text-align: right;
+
+  &__actions {
+    display: flex;
+    justify-content: end;
+    gap: 16px;
+  }
 }
