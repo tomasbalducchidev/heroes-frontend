@@ -1,1 +1,44 @@
-<p>form works!</p>
+@if (data.action === 'create') {
+<h2>Crear Héroe</h2>
+} @else {
+<h2>Actualizar Héroe</h2>
+}
+
+<div class="form-container">
+  <form [formGroup]="heroForm">
+    <div class="form-container__inputs">
+      <mat-form-field class="example-form-field">
+        <mat-label>Nombre</mat-label>
+        <input
+          matInput
+          id="heroName"
+          type="text"
+          formControlName="heroName"
+          maxlength="16"
+        />
+      </mat-form-field>
+      <mat-form-field class="example-form-field">
+        <mat-label>Descripción</mat-label>
+        <input
+          matInput
+          id="heroDescription"
+          type="text"
+          formControlName="heroDescription"
+          maxlength="32"
+        />
+      </mat-form-field>
+    </div>
+    <div class="form-container__buttons">
+      @if (data.action === 'create') {
+      <button type="submit" mat-raised-button>Crear</button>
+      } @else {
+      <button type="submit" mat-raised-button>Actualizar</button>
+
+      }
+      <app-button
+        [buttonText]="'Cancelar'"
+        (handleClickEvent)="cancel()"
+      ></app-button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,35 @@
+@import "colors";
+
+.app-container {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  &__title-container {
+    &__title {
+      margin: 0;
+      font-size: 2em;
+    }
+  }
+
+  &__heroes-container {
+    height: calc(100vh - 136px);
+    box-sizing: border-box;
+    background-color: $card-background;
+    padding: 24px;
+    border-radius: 16px;
+    margin-top: 16px;
+    width: 60vw;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  }
+}
+
+@media (max-width: 1200px) {
+  .app-container {
+    &__heroes-container {
+      width: 90vw;
+    }
+  }
+}

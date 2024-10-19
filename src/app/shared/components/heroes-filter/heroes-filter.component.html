@@ -1,1 +1,14 @@
-<p>heroes-filter works!</p>
+<mat-form-field class="example-form-field">
+  <mat-label>Filtrar por nombre</mat-label>
+  <input matInput type="text" [formControl]="heroName" />
+  @if (heroName.value) {
+  <button
+    matSuffix
+    mat-icon-button
+    aria-label="Clear"
+    (click)="heroName.setValue('')"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+  }
+</mat-form-field>
