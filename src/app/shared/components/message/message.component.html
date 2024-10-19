@@ -1,0 +1,13 @@
+<div class="message-container">
+  <h2 class="message-container__title">{{ data.message }}</h2>
+  <div class="message-container__buttons">
+    <app-button
+      [buttonText]="'Confirmar'"
+      (handleClickEvent)="confirm()"
+    ></app-button>
+    <app-button
+      [buttonText]="'Cancelar'"
+      (handleClickEvent)="cancel()"
+    ></app-button>
+  </div>
+</div>
