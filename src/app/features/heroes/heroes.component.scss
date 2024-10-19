@@ -11,12 +11,10 @@
 }
 
 .example-container {
-  height: 60vh;
-
   &__example-table-container {
     position: relative;
     min-height: 200px;
-    max-height: 100%;
+    height: calc(100vh - 320px);
     overflow: auto;
   }
 }
