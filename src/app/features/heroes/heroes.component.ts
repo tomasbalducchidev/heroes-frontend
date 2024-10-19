@@ -8,6 +8,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormComponent } from './components/form/form.component';
 import { MessageComponent } from '../../shared/components/message/message.component';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -20,6 +21,7 @@ import { MessageComponent } from '../../shared/components/message/message.compon
 })
 export class HeroesComponent {
 
+  private router = inject(Router);
   readonly dialog = inject(MatDialog);
 
   data: Hero[] = [
@@ -70,6 +72,11 @@ export class HeroesComponent {
     });
 
 
+  }
+
+  navigateToHeroDetail = (id: number) => {
+    console.log('navigateToHeroDetail', id);
+    this.router.navigate(['/hero', id]);
   }
 
 

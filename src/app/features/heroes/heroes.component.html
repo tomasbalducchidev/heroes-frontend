@@ -56,6 +56,11 @@
                   [iconOnly]="true"
                   [icon]="'delete'"
                 ></app-button>
+                <app-button
+                  (handleClickEvent)="navigateToHeroDetail(row.id)"
+                  [iconOnly]="true"
+                  [icon]="'info'"
+                ></app-button>
               </div>
             </td>
           </ng-container>
