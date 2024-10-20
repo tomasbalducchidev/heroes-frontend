@@ -1,3 +1,5 @@
+@import "colors";
+
 .hero-detail-container {
   display: flex;
   flex-direction: column;
@@ -10,6 +12,11 @@
     align-items: flex-start;
     justify-content: flex-start;
     width: 40%;
+    border: $primary solid 1px;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    margin-bottom: 24px;
 
     &__subtitle {
       font-size: 1em;
