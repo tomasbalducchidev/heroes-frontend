@@ -4,11 +4,12 @@ import { ButtonComponent } from '../../shared/components/button/button.component
 import { Subscription, retry } from 'rxjs';
 import { HeroesService } from '../../services/heroes.service';
 import { Hero } from '../../models/heroes.model';
+import { CapitalizePipe } from '../../pipes/capitalize.pipe';
 
 @Component({
   selector: 'app-hero-detail',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, CapitalizePipe],
   templateUrl: './hero-detail.component.html',
   styleUrl: './hero-detail.component.scss'
 })
