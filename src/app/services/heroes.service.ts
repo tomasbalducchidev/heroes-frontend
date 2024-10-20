@@ -58,4 +58,11 @@ export class HeroesService {
 
   }
 
+  deleteHero = (id: number) => {
+    const index = this.heroes.findIndex(hero => hero.id === id);
+    const deletedHero = this.heroes[index];
+    this.heroes.splice(index, 1);
+    return of(deletedHero);
+  }
+
 }

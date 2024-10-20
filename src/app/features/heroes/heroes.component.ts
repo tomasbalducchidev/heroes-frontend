@@ -84,6 +84,16 @@ export class HeroesComponent implements OnInit, OnDestroy {
     })
   }
 
+  deleteHero = (id: number) => {
+    this._heroesService.deleteHero(id).pipe(
+      retry(3)
+    ).subscribe(() => {
+      this.getHeroes();
+      this.filteredHeroes = [...this.filteredHeroes];
+      this.cdr.detectChanges();
+    })
+  }
+
   openCreateModal = (action: 'create') => {
     const dialogRef = this.dialog.open(FormComponent, {
       data: {
@@ -97,9 +107,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
         console.log(`Dialog result: ${result.heroName}`);
 
 
-        // if (action === 'create') {
         this.createHero(result.heroName, result.heroDescription);
-        // }
 
       } catch (error) {
         console.error(error);
@@ -141,7 +149,16 @@ export class HeroesComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+      try {
+
+
+
+        this.deleteHero(result);
+
+      } catch (error) {
+        console.error(error);
+
+      }
     });
 
 
