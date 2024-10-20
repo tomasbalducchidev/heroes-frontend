@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { HeroesFilterComponent } from '../../shared/components/heroes-filter/heroes-filter.component';
 import { MatTableModule } from '@angular/material/table';
@@ -9,6 +9,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormComponent } from './components/form/form.component';
 import { MessageComponent } from '../../shared/components/message/message.component';
 import { Router } from '@angular/router';
+import { HeroesService } from '../../services/heroes.service';
+import { retry } from 'rxjs';
 
 
 @Component({
@@ -19,31 +21,32 @@ import { Router } from '@angular/router';
   styleUrl: './heroes.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeroesComponent {
+export class HeroesComponent implements OnInit {
 
   private router = inject(Router);
   readonly dialog = inject(MatDialog);
-
-  data: Hero[] = [
-    { id: 1, name: 'Superman', description: 'Hombre de acero con gran fuerza.' },
-    { id: 2, name: 'Batman', description: 'El Caballero Oscuro de Gotham.' },
-    { id: 3, name: 'Deadpool', description: 'Mercenario con humor retorcido.' },
-    { id: 4, name: 'Kickass', description: 'Héroe amateur con gran valentía.' },
-    { id: 5, name: 'Spiderman', description: 'Lanzador de telarañas, gran poder.' },
-    { id: 6, name: 'Wolverine', description: 'Mutante con garras y regeneración.' },
-    { id: 7, name: 'Hulk', description: 'Gigante verde con furia imparable.' },
-    { id: 8, name: 'Magneto', description: 'Maestro del magnetismo, líder mutante.' },
-    { id: 9, name: 'Black Widow', description: 'Espía de élite con grandes habilidades.' },
-    { id: 10, name: 'Wonder Woman', description: 'Guerrera amazona con poder divino.' },
-    { id: 11, name: 'Xena', description: 'Princesa guerrera experta en combate.' },
-    { id: 12, name: 'Storm', description: 'Mutante que controla el clima.' },
-    { id: 13, name: 'Wasp', description: 'Heroína que se encoge y tiene alas.' },
-    { id: 14, name: 'Catwoman', description: 'Ladrona ágil con encanto felino.' },
-    { id: 15, name: 'Venom', description: 'Simbionte alienígena con gran poder.' }
-  ]
-
+  private _heroesService = inject(HeroesService);
 
   displayedColumns: string[] = ['id', 'name', 'actions'];
+
+  heroes: Hero[] = [];
+
+  ngOnInit(): void {
+    this.getHeroes();
+
+  }
+
+  getHeroes = () => {
+    try {
+      this._heroesService.getAllHeroes().pipe(
+        retry(3)
+      ).subscribe((heroes) => {
+        this.heroes = heroes;
+      })
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   openFormModal = (action: 'create' | 'update', hero?: Hero) => {
     const dialogRef = this.dialog.open(FormComponent, {

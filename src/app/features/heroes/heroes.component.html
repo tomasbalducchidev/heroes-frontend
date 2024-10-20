@@ -24,7 +24,7 @@
       } -->
 
       <div class="example-container__example-table-container">
-        <table mat-table [dataSource]="data" class="example-table">
+        <table mat-table [dataSource]="heroes" class="example-table">
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef>ID</th>
             <td mat-cell *matCellDef="let row">{{ row.id }}</td>
