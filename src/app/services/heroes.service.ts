@@ -30,4 +30,12 @@ export class HeroesService {
   getAllHeroes = () => {
     return of(this.heroes);
   }
+
+  getHeroById = (id: number) => {
+    const hero = this.heroes.find(hero => hero.id === id);
+    if (hero) {
+      return of(hero);
+    } else return null;
+
+  }
 }

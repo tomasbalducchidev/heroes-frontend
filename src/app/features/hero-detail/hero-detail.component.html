@@ -1,12 +1,11 @@
 <div class="hero-detail-container">
   <h2>Hero Detail</h2>
   <div class="hero-detail-container__hero-detail-content">
-    <p class="hero-detail-container__hero-detail-content__subtitle">Superman</p>
+    <p class="hero-detail-container__hero-detail-content__subtitle">
+      {{ selectedHero.name }}
+    </p>
     <p>
-      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Commodi corrupti
-      nobis deserunt obcaecati quam. Provident rerum perferendis ut modi
-      obcaecati? Quaerat odio, quisquam atque delectus praesentium temporibus
-      qui beatae doloribus.
+      {{ selectedHero.description }}
     </p>
   </div>
   <app-button
