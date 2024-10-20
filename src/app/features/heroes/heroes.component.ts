@@ -1,51 +1,121 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { HeroesFilterComponent } from '../../shared/components/heroes-filter/heroes-filter.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Hero } from '../../models/heroes.model';
+import { Hero, UpdateHeroDto } from '../../models/heroes.model';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormComponent } from './components/form/form.component';
 import { MessageComponent } from '../../shared/components/message/message.component';
 import { Router } from '@angular/router';
+import { HeroesService } from '../../services/heroes.service';
+import { retry, Subscription } from 'rxjs';
+import { CapitalizePipe } from '../../pipes/capitalize.pipe';
 
 
 @Component({
   selector: 'app-heroes',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatTableModule, MatPaginatorModule, ButtonComponent, HeroesFilterComponent, MatDialogModule],
+  imports: [MatProgressSpinnerModule, MatTableModule, MatPaginatorModule, ButtonComponent, HeroesFilterComponent, MatDialogModule, CapitalizePipe],
   templateUrl: './heroes.component.html',
   styleUrl: './heroes.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeroesComponent {
+export class HeroesComponent implements OnInit, OnDestroy {
+
 
   private router = inject(Router);
   readonly dialog = inject(MatDialog);
-
-  data: Hero[] = [
-    { id: 1, name: 'Superman', description: 'Hombre de acero con gran fuerza.' },
-    { id: 2, name: 'Batman', description: 'El Caballero Oscuro de Gotham.' },
-    { id: 3, name: 'Deadpool', description: 'Mercenario con humor retorcido.' },
-    { id: 4, name: 'Kickass', description: 'Héroe amateur con gran valentía.' },
-    { id: 5, name: 'Spiderman', description: 'Lanzador de telarañas, gran poder.' },
-    { id: 6, name: 'Wolverine', description: 'Mutante con garras y regeneración.' },
-    { id: 7, name: 'Hulk', description: 'Gigante verde con furia imparable.' },
-    { id: 8, name: 'Magneto', description: 'Maestro del magnetismo, líder mutante.' },
-    { id: 9, name: 'Black Widow', description: 'Espía de élite con grandes habilidades.' },
-    { id: 10, name: 'Wonder Woman', description: 'Guerrera amazona con poder divino.' },
-    { id: 11, name: 'Xena', description: 'Princesa guerrera experta en combate.' },
-    { id: 12, name: 'Storm', description: 'Mutante que controla el clima.' },
-    { id: 13, name: 'Wasp', description: 'Heroína que se encoge y tiene alas.' },
-    { id: 14, name: 'Catwoman', description: 'Ladrona ágil con encanto felino.' },
-    { id: 15, name: 'Venom', description: 'Simbionte alienígena con gran poder.' }
-  ]
+  private _heroesService = inject(HeroesService);
+  private cdr = inject(ChangeDetectorRef);
+  private subscriptions: Subscription = new Subscription();
+  private filteredHeroesSubscription: Subscription | undefined = new Subscription();
 
 
   displayedColumns: string[] = ['id', 'name', 'actions'];
 
-  openFormModal = (action: 'create' | 'update', hero?: Hero) => {
+  heroes: Hero[] = [];
+  filteredHeroes: Hero[] = [];
+
+  ngOnInit(): void {
+    this.getHeroes();
+
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscriptions) {
+      this.subscriptions.unsubscribe();
+    }
+    if (this.filteredHeroesSubscription) {
+      this.filteredHeroesSubscription.unsubscribe();
+    }
+  }
+
+  getHeroes = () => {
+    try {
+      this.subscriptions = this._heroesService.getAllHeroes().pipe(
+        retry(3)
+      ).subscribe((heroes) => {
+        this.filteredHeroes = heroes;
+      })
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  createHero = (name: string, description: string) => {
+    this._heroesService.createHero({ name, description }).pipe(
+      retry(3)
+    ).subscribe(() => {
+      this.getHeroes();
+      this.filteredHeroes = [...this.filteredHeroes];
+      this.cdr.detectChanges();
+    })
+  }
+
+  updateHero = (name: string, description: string, id: number) => {
+    this._heroesService.updateHero({ name, description, id }).pipe(
+      retry(3)
+    ).subscribe(() => {
+      this.getHeroes();
+      this.filteredHeroes = [...this.filteredHeroes];
+      this.cdr.detectChanges();
+    })
+  }
+
+  deleteHero = (id: number) => {
+    this._heroesService.deleteHero(id).pipe(
+      retry(3)
+    ).subscribe(() => {
+      this.getHeroes();
+      this.filteredHeroes = [...this.filteredHeroes];
+      this.cdr.detectChanges();
+    })
+  }
+
+  openCreateModal = (action: 'create') => {
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: {
+        action
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      try {
+
+        console.log(`Dialog result: ${result.heroName}`);
+
+
+        this.createHero(result.heroName, result.heroDescription);
+
+      } catch (error) {
+        console.error(error);
+
+      }
+    });
+  }
+  openUpdateModal = (action: 'update', hero: UpdateHeroDto) => {
     const dialogRef = this.dialog.open(FormComponent, {
       data: {
         action,
@@ -53,12 +123,23 @@ export class HeroesComponent {
       }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+    dialogRef.afterClosed().subscribe((result) => {
+      try {
+
+        console.log(`Dialog result: ${result.heroName}`);
+
+
+        // if (action === 'create') {
+        this.updateHero(result.heroName, result.heroDescription, hero.id);
+        // }
+
+      } catch (error) {
+        console.error(error);
+
+      }
     });
-
-
   }
+
   openDeleteModal = (message: string, hero?: Hero) => {
     const dialogRef = this.dialog.open(MessageComponent, {
       data: {
@@ -68,7 +149,16 @@ export class HeroesComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+      try {
+
+
+
+        this.deleteHero(result);
+
+      } catch (error) {
+        console.error(error);
+
+      }
     });
 
 
@@ -77,6 +167,19 @@ export class HeroesComponent {
   navigateToHeroDetail = (id: number) => {
     console.log('navigateToHeroDetail', id);
     this.router.navigate(['/hero', id]);
+  }
+
+  filterHeroes = (name: string) => {
+    console.log('filterHeroes', name);
+    try {
+      this.filteredHeroesSubscription = this._heroesService.getFilteredHeroes(name).pipe(
+        retry(3)
+      ).subscribe((heroes) => {
+        this.filteredHeroes = heroes;
+      })
+    } catch (error) {
+      console.error(error);
+    }
   }
 
 

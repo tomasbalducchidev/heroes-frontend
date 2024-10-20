@@ -1,10 +1,12 @@
 <div>
   <div class="filter-container">
-    <app-heroes-filter></app-heroes-filter>
+    <app-heroes-filter
+      (heroNameChange)="filterHeroes($event)"
+    ></app-heroes-filter>
     <div class="filter-container__button">
       <app-button
         [buttonText]="'Crear héroe'"
-        (handleClickEvent)="openFormModal('create')"
+        (handleClickEvent)="openCreateModal('create')"
       ></app-button>
     </div>
   </div>
@@ -24,7 +26,7 @@
       } -->
 
       <div class="example-container__example-table-container">
-        <table mat-table [dataSource]="data" class="example-table">
+        <table mat-table [dataSource]="filteredHeroes" class="example-table">
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef>ID</th>
             <td mat-cell *matCellDef="let row">{{ row.id }}</td>
@@ -32,7 +34,7 @@
 
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Nombre</th>
-            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.name | capitalize }}</td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
@@ -42,7 +44,7 @@
             <td class="actions-cell" mat-cell *matCellDef="let row">
               <div class="actions-cell__actions">
                 <app-button
-                  (handleClickEvent)="openFormModal('update', row)"
+                  (handleClickEvent)="openUpdateModal('update', row)"
                   [iconOnly]="true"
                   [icon]="'edit'"
                 ></app-button>

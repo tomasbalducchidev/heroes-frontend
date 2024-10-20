@@ -53,8 +53,11 @@ export class FormComponent implements OnInit {
   }
 
   cancel = () => {
-    this.heroForm.reset();
     this.dialogRef.close();
+  }
+
+  submitForm = () => {
+    this.dialogRef.close(this.heroForm.value);
   }
 
 }

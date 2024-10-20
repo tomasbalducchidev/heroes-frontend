@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-message',
@@ -11,13 +11,19 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class MessageComponent {
 
+  constructor(public dialogRef: MatDialogRef<MessageComponent>) {
+
+  }
+
   data = inject(MAT_DIALOG_DATA);
 
   confirm = () => {
-    console.log('confirm', this.data.hero.id);
+    this.dialogRef.close(this.data.hero.id);
   }
+
   cancel = () => {
-    console.log('cancel');
+    this.dialogRef.close();
+
   }
 
 }
