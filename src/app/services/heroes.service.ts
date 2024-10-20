@@ -44,4 +44,11 @@ export class HeroesService {
       return of(this.heroes.filter(hero => hero.name.toLowerCase().includes(name.toLowerCase())));
     } else return of(this.heroes);
   }
+
+  createHero = (hero: Hero) => {
+    const newHero = { ...hero, id: this.heroes.length + 1 };
+    this.heroes.push(newHero);
+    return of(newHero);
+  }
+
 }

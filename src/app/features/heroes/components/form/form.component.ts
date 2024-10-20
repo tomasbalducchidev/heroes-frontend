@@ -57,4 +57,9 @@ export class FormComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  submitForm = () => {
+    console.log(this.heroForm.value, 'VALUE');
+    this.dialogRef.close(this.heroForm.value);
+  }
+
 }

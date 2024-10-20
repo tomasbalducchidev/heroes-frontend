@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { HeroesFilterComponent } from '../../shared/components/heroes-filter/heroes-filter.component';
 import { MatTableModule } from '@angular/material/table';
@@ -27,6 +27,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   readonly dialog = inject(MatDialog);
   private _heroesService = inject(HeroesService);
+  private cdr = inject(ChangeDetectorRef);
   private subscriptions: Subscription = new Subscription();
   private filteredHeroesSubscription: Subscription | undefined = new Subscription();
 
@@ -45,6 +46,9 @@ export class HeroesComponent implements OnInit, OnDestroy {
     if (this.subscriptions) {
       this.subscriptions.unsubscribe();
     }
+    if (this.filteredHeroesSubscription) {
+      this.filteredHeroesSubscription.unsubscribe();
+    }
   }
 
   getHeroes = () => {
@@ -59,6 +63,16 @@ export class HeroesComponent implements OnInit, OnDestroy {
     }
   }
 
+  createHero = (name: string, description: string) => {
+    this._heroesService.createHero({ name, description }).pipe(
+      retry(3)
+    ).subscribe(() => {
+      this.getHeroes();
+      this.filteredHeroes = [...this.filteredHeroes];
+      this.cdr.detectChanges();
+    })
+  }
+
   openFormModal = (action: 'create' | 'update', hero?: Hero) => {
     const dialogRef = this.dialog.open(FormComponent, {
       data: {
@@ -67,12 +81,23 @@ export class HeroesComponent implements OnInit, OnDestroy {
       }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+    dialogRef.afterClosed().subscribe((result) => {
+      try {
+
+        console.log(`Dialog result: ${result.heroName}`);
+
+
+        if (action === 'create') {
+          this.createHero(result.heroName, result.heroDescription);
+        }
+
+      } catch (error) {
+        console.error(error);
+
+      }
     });
-
-
   }
+
   openDeleteModal = (message: string, hero?: Hero) => {
     const dialogRef = this.dialog.open(MessageComponent, {
       data: {
