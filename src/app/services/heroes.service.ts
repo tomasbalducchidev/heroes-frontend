@@ -23,16 +23,30 @@ export class HeroesService {
     { id: 13, name: 'Wasp', description: 'Heroína que se encoge y tiene alas.' },
     { id: 14, name: 'Catwoman', description: 'Ladrona ágil con encanto felino.' },
     { id: 15, name: 'Venom', description: 'Simbionte alienígena con gran poder.' }
-  ]
+  ];
 
-  constructor() { }
+  filteredHeroes: Hero[] = [];
 
-  getAllHeroes = (page: number = 1): Observable<HeroesDto> => {
+  constructor() {
+    this.filteredHeroes = this.heroes;
+
+  }
+
+  getAllHeroes = (page: number = 1, name?: string): Observable<HeroesDto> => {
     const limit = 10;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
 
-    const paginatedHeroes = this.heroes.slice(startIndex, endIndex);
+
+    if (name) {
+      this.filteredHeroes = this.heroes.filter(hero => hero.name.toLowerCase().includes(name.toLowerCase()));
+    }
+
+    const paginatedHeroes = this.filteredHeroes.slice(startIndex, endIndex);
+
+    console.log(this.filteredHeroes, paginatedHeroes);
+
+
 
     return of({
       heroes: paginatedHeroes,

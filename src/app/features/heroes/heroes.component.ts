@@ -54,9 +54,9 @@ export class HeroesComponent implements OnInit, OnDestroy {
     }
   }
 
-  getHeroes = (page: number) => {
+  getHeroes = (page: number, name?: string) => {
     try {
-      this.subscriptions = this._heroesService.getAllHeroes(page).pipe(
+      this.subscriptions = this._heroesService.getAllHeroes(page, name).pipe(
         retry(3)
       ).subscribe((heroes) => {
         this.filteredHeroes = heroes.heroes;
@@ -173,17 +173,19 @@ export class HeroesComponent implements OnInit, OnDestroy {
     this.router.navigate(['/hero', id]);
   }
 
-  filterHeroes = (name: string) => {
+  filterHeroes = (name: string = '') => {
     console.log('filterHeroes', name);
-    try {
-      this.filteredHeroesSubscription = this._heroesService.getFilteredHeroes(name).pipe(
-        retry(3)
-      ).subscribe((heroes) => {
-        this.filteredHeroes = heroes;
-      })
-    } catch (error) {
-      console.error(error);
-    }
+    this.getHeroes(this.currentPage, name);
+
+    // try {
+    //   this.filteredHeroesSubscription = this._heroesService.getAllHeroes(1, name).pipe(
+    //     retry(3)
+    //   ).subscribe((heroes) => {
+    //     this.filteredHeroes = heroes;
+    //   })
+    // } catch (error) {
+    //   console.error(error);
+    // }
   }
 
   handlePageEvent = (event: PageEvent) => {
