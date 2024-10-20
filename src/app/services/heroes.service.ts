@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CreateHeroDto, Hero, UpdateHeroDto } from '../models/heroes.model';
-import { of } from 'rxjs';
+import { CreateHeroDto, Hero, HeroesDto, UpdateHeroDto } from '../models/heroes.model';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -27,9 +27,20 @@ export class HeroesService {
 
   constructor() { }
 
-  getAllHeroes = () => {
-    return of(this.heroes);
+  getAllHeroes = (page: number = 1): Observable<HeroesDto> => {
+    const limit = 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    const paginatedHeroes = this.heroes.slice(startIndex, endIndex);
+
+    return of({
+      heroes: paginatedHeroes,
+      currentPage: page,
+      totalHeroes: this.heroes.length
+    });
   }
+
 
   getHeroById = (id: number) => {
     const hero = this.heroes.find(hero => hero.id === id);

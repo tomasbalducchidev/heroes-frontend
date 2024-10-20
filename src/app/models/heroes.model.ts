@@ -12,3 +12,9 @@ export interface UpdateHeroDto {
   name: string;
   description: string;
 }
+
+export interface HeroesDto {
+  heroes: Hero[];
+  currentPage: number,
+  totalHeroes: number
+}

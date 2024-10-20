@@ -4,7 +4,7 @@ import { HeroesFilterComponent } from '../../shared/components/heroes-filter/her
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Hero, UpdateHeroDto } from '../../models/heroes.model';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormComponent } from './components/form/form.component';
 import { MessageComponent } from '../../shared/components/message/message.component';
@@ -37,9 +37,11 @@ export class HeroesComponent implements OnInit, OnDestroy {
 
   heroes: Hero[] = [];
   filteredHeroes: Hero[] = [];
+  totalHeroes: number = 0;
+  currentPage: number = 1;
 
   ngOnInit(): void {
-    this.getHeroes();
+    this.getHeroes(this.currentPage);
 
   }
 
@@ -52,12 +54,14 @@ export class HeroesComponent implements OnInit, OnDestroy {
     }
   }
 
-  getHeroes = () => {
+  getHeroes = (page: number) => {
     try {
-      this.subscriptions = this._heroesService.getAllHeroes().pipe(
+      this.subscriptions = this._heroesService.getAllHeroes(page).pipe(
         retry(3)
       ).subscribe((heroes) => {
-        this.filteredHeroes = heroes;
+        this.filteredHeroes = heroes.heroes;
+        this.totalHeroes = heroes.totalHeroes;
+        this.currentPage = heroes.currentPage;
       })
     } catch (error) {
       console.error(error);
@@ -68,7 +72,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
     this._heroesService.createHero({ name, description }).pipe(
       retry(3)
     ).subscribe(() => {
-      this.getHeroes();
+      this.getHeroes(this.currentPage);
       this.filteredHeroes = [...this.filteredHeroes];
       this.cdr.detectChanges();
     })
@@ -78,7 +82,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
     this._heroesService.updateHero({ name, description, id }).pipe(
       retry(3)
     ).subscribe(() => {
-      this.getHeroes();
+      this.getHeroes(this.currentPage);
       this.filteredHeroes = [...this.filteredHeroes];
       this.cdr.detectChanges();
     })
@@ -88,7 +92,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
     this._heroesService.deleteHero(id).pipe(
       retry(3)
     ).subscribe(() => {
-      this.getHeroes();
+      this.getHeroes(this.currentPage);
       this.filteredHeroes = [...this.filteredHeroes];
       this.cdr.detectChanges();
     })
@@ -180,6 +184,10 @@ export class HeroesComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  handlePageEvent = (event: PageEvent) => {
+    this.getHeroes(event.pageIndex + 1);
   }
 
 
