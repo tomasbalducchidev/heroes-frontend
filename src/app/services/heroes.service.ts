@@ -38,4 +38,10 @@ export class HeroesService {
     } else return null;
 
   }
+
+  getFilteredHeroes = (name: string) => {
+    if (name) {
+      return of(this.heroes.filter(hero => hero.name.toLowerCase().includes(name.toLowerCase())));
+    } else return of(this.heroes);
+  }
 }

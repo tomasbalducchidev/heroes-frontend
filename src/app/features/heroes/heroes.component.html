@@ -1,6 +1,8 @@
 <div>
   <div class="filter-container">
-    <app-heroes-filter></app-heroes-filter>
+    <app-heroes-filter
+      (heroNameChange)="filterHeroes($event)"
+    ></app-heroes-filter>
     <div class="filter-container__button">
       <app-button
         [buttonText]="'Crear héroe'"
@@ -24,7 +26,7 @@
       } -->
 
       <div class="example-container__example-table-container">
-        <table mat-table [dataSource]="heroes" class="example-table">
+        <table mat-table [dataSource]="filteredHeroes" class="example-table">
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef>ID</th>
             <td mat-cell *matCellDef="let row">{{ row.id }}</td>

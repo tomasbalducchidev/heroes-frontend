@@ -28,11 +28,13 @@ export class HeroesComponent implements OnInit, OnDestroy {
   readonly dialog = inject(MatDialog);
   private _heroesService = inject(HeroesService);
   private subscriptions: Subscription = new Subscription();
+  private filteredHeroesSubscription: Subscription | undefined = new Subscription();
 
 
   displayedColumns: string[] = ['id', 'name', 'actions'];
 
   heroes: Hero[] = [];
+  filteredHeroes: Hero[] = [];
 
   ngOnInit(): void {
     this.getHeroes();
@@ -50,16 +52,12 @@ export class HeroesComponent implements OnInit, OnDestroy {
       this.subscriptions = this._heroesService.getAllHeroes().pipe(
         retry(3)
       ).subscribe((heroes) => {
-        this.heroes = heroes;
+        this.filteredHeroes = heroes;
       })
     } catch (error) {
       console.error(error);
     }
   }
-
-
-
-
 
   openFormModal = (action: 'create' | 'update', hero?: Hero) => {
     const dialogRef = this.dialog.open(FormComponent, {
@@ -93,6 +91,19 @@ export class HeroesComponent implements OnInit, OnDestroy {
   navigateToHeroDetail = (id: number) => {
     console.log('navigateToHeroDetail', id);
     this.router.navigate(['/hero', id]);
+  }
+
+  filterHeroes = (name: string) => {
+    console.log('filterHeroes', name);
+    try {
+      this.filteredHeroesSubscription = this._heroesService.getFilteredHeroes(name).pipe(
+        retry(3)
+      ).subscribe((heroes) => {
+        this.filteredHeroes = heroes;
+      })
+    } catch (error) {
+      console.error(error);
+    }
   }
 
 
