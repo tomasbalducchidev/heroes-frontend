@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Hero } from '../models/heroes.model';
+import { CreateHeroDto, Hero, UpdateHeroDto } from '../models/heroes.model';
 import { of } from 'rxjs';
 
 @Injectable({
@@ -45,10 +45,17 @@ export class HeroesService {
     } else return of(this.heroes);
   }
 
-  createHero = (hero: Hero) => {
+  createHero = (hero: CreateHeroDto) => {
     const newHero = { ...hero, id: this.heroes.length + 1 };
     this.heroes.push(newHero);
     return of(newHero);
+  }
+
+  updateHero = (hero: UpdateHeroDto) => {
+    const index = this.heroes.findIndex(h => h.id === hero.id);
+    this.heroes[index] = hero;
+    return of(hero);
+
   }
 
 }
