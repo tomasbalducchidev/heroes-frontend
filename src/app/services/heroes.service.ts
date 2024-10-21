@@ -41,7 +41,6 @@ export class HeroesService {
 
     if (name) {
       this.filteredHeroes = this.heroes.filter(hero => hero.name.toLowerCase().includes(name.toLowerCase()));
-      console.log(this.filteredHeroes, 'FILTEERrr');
 
     } else if (!pagination) {
       this.filteredHeroes = [...this.heroes];
