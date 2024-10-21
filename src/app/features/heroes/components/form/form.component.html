@@ -31,15 +31,18 @@
     </div>
     <div class="form-container__buttons">
       @if (data.action === 'create') {
-      <button type="submit" mat-raised-button>Crear</button>
+      <button [disabled]="!heroForm.valid" type="submit" mat-raised-button>
+        Crear
+      </button>
       } @else {
-      <button type="submit" mat-raised-button>Actualizar</button>
+      <button [disabled]="!heroForm.valid" type="submit" mat-raised-button>
+        Actualizar
+      </button>
 
       }
-      <app-button
-        [buttonText]="'Cancelar'"
-        (handleClickEvent)="cancel()"
-      ></app-button>
+      <button type="button" (click)="cancel()" mat-raised-button>
+        Cancelar
+      </button>
     </div>
   </form>
 </div>

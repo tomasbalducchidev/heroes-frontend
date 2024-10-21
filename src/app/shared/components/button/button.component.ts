@@ -14,6 +14,7 @@ export class ButtonComponent {
   buttonText = input<string>('');
   iconOnly = input<boolean>(false);
   icon = input<string>('');
+  buttonType = input<string>('');
 
   @Output() handleClickEvent = new EventEmitter();
 

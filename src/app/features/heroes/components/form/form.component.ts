@@ -52,12 +52,16 @@ export class FormComponent implements OnInit {
     this.subscriptions.unsubscribe();
   }
 
-  cancel = () => {
-    this.dialogRef.close();
-  }
-
   submitForm = () => {
     this.dialogRef.close(this.heroForm.value);
   }
+
+  cancel = () => {
+    this.dialogRef.close('cancel');
+
+
+  }
+
+
 
 }
