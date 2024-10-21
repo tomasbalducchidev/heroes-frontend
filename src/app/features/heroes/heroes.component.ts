@@ -124,6 +124,9 @@ export class HeroesComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe((result) => {
+
+      if (result === 'cancel') return;
+
       try {
         this.createHero(result.heroName, result.heroDescription);
       } catch (error) {
@@ -139,6 +142,8 @@ export class HeroesComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'cancel') return;
+
       try {
         this.updateHero(result.heroName, result.heroDescription, hero.id);
       } catch (error) {
@@ -155,6 +160,8 @@ export class HeroesComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe(result => {
+
+      if (result === 'cancel') return;
       try {
         this.deleteHero(result);
       } catch (error) {

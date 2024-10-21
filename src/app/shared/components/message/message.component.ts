@@ -22,7 +22,7 @@ export class MessageComponent {
   }
 
   cancel = () => {
-    this.dialogRef.close();
+    this.dialogRef.close('cancel');
 
   }
 
