@@ -1,0 +1,15 @@
+<div class="hero-detail-container">
+  <h2>Hero Detail</h2>
+  <div class="hero-detail-container__hero-detail-content">
+    <p class="hero-detail-container__hero-detail-content__subtitle">
+      {{ selectedHero.name | capitalize }}
+    </p>
+    <p>
+      {{ selectedHero.description }}
+    </p>
+  </div>
+  <app-button
+    [buttonText]="'Volver'"
+    (click)="navigateToHeroList()"
+  ></app-button>
+</div>

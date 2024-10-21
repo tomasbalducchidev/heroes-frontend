@@ -1,1 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+@import "colors";
+
+html,
+body {
+  height: 100%;
+  background-color: $background;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.mat-display-medium,
+.mat-typography .mat-display-medium,
+.mat-typography h2 {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 16px;
+}
