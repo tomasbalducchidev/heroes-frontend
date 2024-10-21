@@ -16,7 +16,8 @@ export class AppComponent {
 
   private _loaderService = inject(LoaderService);
 
+  // isLoading$ = this._loaderService.isLoading$;
 
-  isLoading$ = this._loaderService.isLoading$;
+  isLoadingSignal = this._loaderService.isLoadingSignal;
 
 }

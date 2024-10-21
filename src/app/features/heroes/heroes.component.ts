@@ -34,8 +34,6 @@ export class HeroesComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private filteredHeroesSubscription: Subscription | undefined = new Subscription();
 
-  // isLoading$ = this._loaderService.isLoading$;
-
   displayedColumns: string[] = ['id', 'name', 'actions'];
 
   heroes: Hero[] = [];
@@ -189,6 +187,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
   }
 
   handleIsLoading = (isLoading: boolean) => {
-    this._loaderService.handleisLoading(isLoading);
+    // this._loaderService.handleisLoading(isLoading);
+    this._loaderService.handleisLoadingSignal(isLoading);
   }
 }
