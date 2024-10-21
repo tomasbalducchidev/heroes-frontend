@@ -12,12 +12,13 @@ import { HeroesService } from '../../services/heroes.service';
 import { retry, Subscription } from 'rxjs';
 import { CapitalizePipe } from '../../pipes/capitalize.pipe';
 import { LoaderService } from '../../services/loader.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @Component({
   selector: 'app-heroes',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule, ButtonComponent, HeroesFilterComponent, MatDialogModule, CapitalizePipe],
+  imports: [MatSnackBarModule, MatTableModule, MatPaginatorModule, ButtonComponent, HeroesFilterComponent, MatDialogModule, CapitalizePipe],
   templateUrl: './heroes.component.html',
   styleUrl: './heroes.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +29,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
 
   private router = inject(Router);
   readonly dialog = inject(MatDialog);
+  private _snackBar = inject(MatSnackBar);
   private _heroesService = inject(HeroesService);
   private _loaderService = inject(LoaderService);
   private cdr = inject(ChangeDetectorRef);
@@ -54,6 +56,11 @@ export class HeroesComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  openSnackBar(message: string, action: string, duration: number = 2000) {
+    this._snackBar.open(message, action, { duration });
+  }
+
   getHeroes = (page: number, name?: string, pagination?: boolean) => {
     try {
       this.subscriptions = this._heroesService.getAllHeroes(page, name, pagination).pipe(
@@ -78,6 +85,8 @@ export class HeroesComponent implements OnInit, OnDestroy {
         this.filteredHeroes = [...this.filteredHeroes];
         this.cdr.detectChanges();
         this.handleIsLoading(false);
+        this.openSnackBar('Héroe creado', 'Ok');
+
       })
     }, 1000); // Simulate a delay of 1 second
 
@@ -94,6 +103,8 @@ export class HeroesComponent implements OnInit, OnDestroy {
         this.filteredHeroes = [...this.filteredHeroes];
         this.cdr.detectChanges();
         this.handleIsLoading(false);
+        this.openSnackBar('Héroe actualizado', 'Ok');
+
 
       })
     }, 1000);
@@ -110,7 +121,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
         this.filteredHeroes = [...this.filteredHeroes];
         this.cdr.detectChanges();
         this.handleIsLoading(false);
-
+        this.openSnackBar('Héroe eliminado', 'Ok');
       })
     }, 1000);
   }
