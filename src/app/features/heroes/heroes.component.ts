@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { HeroesFilterComponent } from '../../shared/components/heroes-filter/heroes-filter.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Hero, UpdateHeroDto } from '../../models/heroes.model';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FormComponent } from './components/form/form.component';
 import { MessageComponent } from '../../shared/components/message/message.component';
@@ -24,6 +24,7 @@ import { CapitalizePipe } from '../../pipes/capitalize.pipe';
 })
 export class HeroesComponent implements OnInit, OnDestroy {
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private router = inject(Router);
   readonly dialog = inject(MatDialog);
@@ -31,7 +32,6 @@ export class HeroesComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private subscriptions: Subscription = new Subscription();
   private filteredHeroesSubscription: Subscription | undefined = new Subscription();
-
 
   displayedColumns: string[] = ['id', 'name', 'actions'];
 
@@ -42,7 +42,6 @@ export class HeroesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getHeroes(this.currentPage);
-
   }
 
   ngOnDestroy(): void {
@@ -54,9 +53,9 @@ export class HeroesComponent implements OnInit, OnDestroy {
     }
   }
 
-  getHeroes = (page: number, name?: string) => {
+  getHeroes = (page: number, name?: string, pagination?: boolean) => {
     try {
-      this.subscriptions = this._heroesService.getAllHeroes(page, name).pipe(
+      this.subscriptions = this._heroesService.getAllHeroes(page, name, pagination).pipe(
         retry(3)
       ).subscribe((heroes) => {
         this.filteredHeroes = heroes.heroes;
@@ -104,18 +103,11 @@ export class HeroesComponent implements OnInit, OnDestroy {
         action
       }
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       try {
-
-        console.log(`Dialog result: ${result.heroName}`);
-
-
         this.createHero(result.heroName, result.heroDescription);
-
       } catch (error) {
         console.error(error);
-
       }
     });
   }
@@ -126,20 +118,11 @@ export class HeroesComponent implements OnInit, OnDestroy {
         hero
       }
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       try {
-
-        console.log(`Dialog result: ${result.heroName}`);
-
-
-        // if (action === 'create') {
         this.updateHero(result.heroName, result.heroDescription, hero.id);
-        // }
-
       } catch (error) {
         console.error(error);
-
       }
     });
   }
@@ -151,49 +134,31 @@ export class HeroesComponent implements OnInit, OnDestroy {
         hero
       }
     });
-
     dialogRef.afterClosed().subscribe(result => {
       try {
-
-
-
         this.deleteHero(result);
-
       } catch (error) {
         console.error(error);
-
       }
     });
-
-
   }
 
   navigateToHeroDetail = (id: number) => {
-    console.log('navigateToHeroDetail', id);
     this.router.navigate(['/hero', id]);
   }
 
   filterHeroes = (name: string = '') => {
-    console.log('filterHeroes', name);
     this.getHeroes(this.currentPage, name);
+    console.log(name, 'FILTEER');
+    this.goToFirstPage();
 
-    // try {
-    //   this.filteredHeroesSubscription = this._heroesService.getAllHeroes(1, name).pipe(
-    //     retry(3)
-    //   ).subscribe((heroes) => {
-    //     this.filteredHeroes = heroes;
-    //   })
-    // } catch (error) {
-    //   console.error(error);
-    // }
   }
 
   handlePageEvent = (event: PageEvent) => {
-    this.getHeroes(event.pageIndex + 1);
+    this.getHeroes(event.pageIndex + 1, '', true);
   }
 
-
-
-
-
+  goToFirstPage() {
+    this.paginator.firstPage();
+  }
 }

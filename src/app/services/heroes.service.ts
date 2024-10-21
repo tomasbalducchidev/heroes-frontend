@@ -28,25 +28,26 @@ export class HeroesService {
   filteredHeroes: Hero[] = [];
 
   constructor() {
-    this.filteredHeroes = this.heroes;
-
+    this.filteredHeroes = [...this.heroes];
   }
 
-  getAllHeroes = (page: number = 1, name?: string): Observable<HeroesDto> => {
+  getAllHeroes = (page: number = 1, name?: string, pagination?: boolean): Observable<HeroesDto> => {
+
     const limit = 10;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
 
 
+
     if (name) {
       this.filteredHeroes = this.heroes.filter(hero => hero.name.toLowerCase().includes(name.toLowerCase()));
+      console.log(this.filteredHeroes, 'FILTEERrr');
+
+    } else if (!pagination) {
+      this.filteredHeroes = [...this.heroes];
     }
 
     const paginatedHeroes = this.filteredHeroes.slice(startIndex, endIndex);
-
-    console.log(this.filteredHeroes, paginatedHeroes);
-
-
 
     return of({
       heroes: paginatedHeroes,
@@ -55,13 +56,11 @@ export class HeroesService {
     });
   }
 
-
   getHeroById = (id: number) => {
     const hero = this.heroes.find(hero => hero.id === id);
     if (hero) {
       return of(hero);
     } else return null;
-
   }
 
   getFilteredHeroes = (name: string) => {
@@ -80,7 +79,6 @@ export class HeroesService {
     const index = this.heroes.findIndex(h => h.id === hero.id);
     this.heroes[index] = hero;
     return of(hero);
-
   }
 
   deleteHero = (id: number) => {
