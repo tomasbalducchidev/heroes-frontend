@@ -7,10 +7,8 @@ export interface CreateHeroDto {
   name: string;
   description: string;
 }
-export interface UpdateHeroDto {
+export interface UpdateHeroDto extends CreateHeroDto {
   id: number;
-  name: string;
-  description: string;
 }
 
 export interface HeroesDto {

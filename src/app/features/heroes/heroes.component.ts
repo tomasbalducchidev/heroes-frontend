@@ -33,11 +33,13 @@ export class HeroesComponent implements OnInit, OnDestroy {
   private _heroesService = inject(HeroesService);
   private _loaderService = inject(LoaderService);
   private cdr = inject(ChangeDetectorRef);
-  private subscriptions: Subscription = new Subscription();
+  private getHeroSubscription: Subscription = new Subscription();
+  private createHeroSubscription: Subscription = new Subscription();
+  private updateHeroSubscription: Subscription = new Subscription();
+  private deleteHeroSubscription: Subscription = new Subscription();
   private filteredHeroesSubscription: Subscription | undefined = new Subscription();
 
   displayedColumns: string[] = ['id', 'name', 'actions'];
-
   heroes: Hero[] = [];
   filteredHeroes: Hero[] = [];
   totalHeroes: number = 0;
@@ -48,14 +50,22 @@ export class HeroesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.subscriptions) {
-      this.subscriptions.unsubscribe();
+    if (this.getHeroSubscription) {
+      this.getHeroSubscription.unsubscribe();
     }
     if (this.filteredHeroesSubscription) {
       this.filteredHeroesSubscription.unsubscribe();
     }
+    if (this.createHeroSubscription) {
+      this.createHeroSubscription.unsubscribe();
+    }
+    if (this.updateHeroSubscription) {
+      this.updateHeroSubscription.unsubscribe();
+    }
+    if (this.deleteHeroSubscription) {
+      this.deleteHeroSubscription.unsubscribe();
+    }
   }
-
 
   openSnackBar(message: string, action: string, duration: number = 2000) {
     this._snackBar.open(message, action, { duration });
@@ -63,7 +73,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
 
   getHeroes = (page: number, name?: string, pagination?: boolean) => {
     try {
-      this.subscriptions = this._heroesService.getAllHeroes(page, name, pagination).pipe(
+      this.getHeroSubscription = this._heroesService.getAllHeroes(page, name, pagination).pipe(
         retry(3)
       ).subscribe((heroes) => {
         this.filteredHeroes = heroes.heroes;
@@ -78,7 +88,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
   createHero = (name: string, description: string) => {
     this.handleIsLoading(true);
     setTimeout(() => {
-      this._heroesService.createHero({ name, description }).pipe(
+      this.createHeroSubscription = this._heroesService.createHero({ name, description }).pipe(
         retry(3)
       ).subscribe(() => {
         this.getHeroes(this.currentPage);
@@ -86,17 +96,14 @@ export class HeroesComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
         this.handleIsLoading(false);
         this.openSnackBar('Héroe creado', 'Ok');
-
       })
     }, 1000); // Simulate a delay of 1 second
-
   }
 
   updateHero = (name: string, description: string, id: number) => {
     this.handleIsLoading(true);
-
     setTimeout(() => {
-      this._heroesService.updateHero({ name, description, id }).pipe(
+      this.updateHeroSubscription = this._heroesService.updateHero({ name, description, id }).pipe(
         retry(3)
       ).subscribe(() => {
         this.getHeroes(this.currentPage);
@@ -104,17 +111,14 @@ export class HeroesComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
         this.handleIsLoading(false);
         this.openSnackBar('Héroe actualizado', 'Ok');
-
-
       })
     }, 1000);
   }
 
   deleteHero = (id: number) => {
     this.handleIsLoading(true);
-
     setTimeout(() => {
-      this._heroesService.deleteHero(id).pipe(
+      this.deleteHeroSubscription = this._heroesService.deleteHero(id).pipe(
         retry(3)
       ).subscribe(() => {
         this.getHeroes(this.currentPage);
@@ -133,9 +137,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe((result) => {
-
       if (result === 'cancel') return;
-
       try {
         this.createHero(result.heroName, result.heroDescription);
       } catch (error) {
@@ -143,6 +145,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   openUpdateModal = (action: 'update', hero: UpdateHeroDto) => {
     const dialogRef = this.dialog.open(FormComponent, {
       data: {
@@ -152,7 +155,6 @@ export class HeroesComponent implements OnInit, OnDestroy {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'cancel') return;
-
       try {
         this.updateHero(result.heroName, result.heroDescription, hero.id);
       } catch (error) {
@@ -169,7 +171,6 @@ export class HeroesComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe(result => {
-
       if (result === 'cancel') return;
       try {
         this.deleteHero(result);
@@ -186,7 +187,6 @@ export class HeroesComponent implements OnInit, OnDestroy {
   filterHeroes = (name: string = '') => {
     this.getHeroes(this.currentPage, name);
     this.goToFirstPage();
-
   }
 
   handlePageEvent = (event: PageEvent) => {

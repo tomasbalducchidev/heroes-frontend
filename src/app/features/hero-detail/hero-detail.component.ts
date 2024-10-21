@@ -22,31 +22,28 @@ export class HeroDetailComponent {
   selectedHero: Hero = {} as Hero;
 
   private heroSubscription: Subscription | undefined = new Subscription();
+  private routeSubscription: Subscription | undefined = new Subscription();
 
-
-  constructor(private route: ActivatedRoute) {
-
-  }
+  constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.selectedId = Number(params.get('id'));
       this.getHero(this.selectedId);
-
-
     })
-
   }
 
   ngOnDestroy(): void {
     if (this.heroSubscription) {
       this.heroSubscription.unsubscribe();
     }
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
   }
 
   navigateToHeroList = () => {
     this.router.navigate(['']);
-
   }
 
   getHero = (id: number) => {
@@ -55,8 +52,6 @@ export class HeroDetailComponent {
         retry(3)
       ).subscribe((hero) => {
         this.selectedHero = hero;
-        console.log(this.selectedHero);
-
       })
     } catch (error) {
       console.error(error);

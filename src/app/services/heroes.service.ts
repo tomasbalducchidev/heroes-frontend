@@ -37,8 +37,6 @@ export class HeroesService {
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
 
-
-
     if (name) {
       this.filteredHeroes = this.heroes.filter(hero => hero.name.toLowerCase().includes(name.toLowerCase()));
 
@@ -55,32 +53,32 @@ export class HeroesService {
     });
   }
 
-  getHeroById = (id: number) => {
+  getHeroById = (id: number): Observable<Hero> | null => {
     const hero = this.heroes.find(hero => hero.id === id);
     if (hero) {
       return of(hero);
     } else return null;
   }
 
-  getFilteredHeroes = (name: string) => {
+  getFilteredHeroes = (name: string): Observable<Hero[]> => {
     if (name) {
       return of(this.heroes.filter(hero => hero.name.toLowerCase().includes(name.toLowerCase())));
     } else return of(this.heroes);
   }
 
-  createHero = (hero: CreateHeroDto) => {
+  createHero = (hero: CreateHeroDto): Observable<Hero> => {
     const newHero = { ...hero, id: this.heroes.length + 1 };
     this.heroes.push(newHero);
     return of(newHero);
   }
 
-  updateHero = (hero: UpdateHeroDto) => {
+  updateHero = (hero: UpdateHeroDto): Observable<UpdateHeroDto> => {
     const index = this.heroes.findIndex(h => h.id === hero.id);
     this.heroes[index] = hero;
     return of(hero);
   }
 
-  deleteHero = (id: number) => {
+  deleteHero = (id: number): Observable<Hero> => {
     const index = this.heroes.findIndex(hero => hero.id === id);
     const deletedHero = this.heroes[index];
     this.heroes.splice(index, 1);
