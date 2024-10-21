@@ -12,6 +12,4 @@ export class UpperCaseDirective {
     const input = this.el.nativeElement as HTMLInputElement;
     input.value = input.value.toUpperCase();
   }
-
-
 }

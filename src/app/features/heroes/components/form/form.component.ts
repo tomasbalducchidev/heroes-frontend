@@ -15,7 +15,6 @@ import { UpperCaseDirective } from '../../../../directives/upper-case.directive'
   templateUrl: './form.component.html',
   styleUrl: './form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-
 })
 export class FormComponent implements OnInit {
 
@@ -30,15 +29,14 @@ export class FormComponent implements OnInit {
       heroDescription: ['', Validators.required]
     });
   }
-  ngOnInit(): void {
 
+  ngOnInit(): void {
     if (this.data.action === 'update') {
       this.heroForm.patchValue({
         heroName: this.data.hero.name,
         heroDescription: this.data.hero.description
       })
     }
-
 
     this.subscriptions.add(
       this.heroForm.valueChanges.subscribe((formValue) => {
@@ -62,10 +60,6 @@ export class FormComponent implements OnInit {
 
   cancel = () => {
     this.dialogRef.close('cancel');
-
-
   }
-
-
 
 }
