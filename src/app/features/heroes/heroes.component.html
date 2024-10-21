@@ -74,8 +74,10 @@
 
       <mat-paginator
         [hidePageSize]="true"
-        [length]="17"
+        [length]="totalHeroes"
+        [pageSize]="10"
         aria-label="Select page of Heroes list"
+        (page)="handlePageEvent($event)"
       ></mat-paginator>
     </div>
   </div>

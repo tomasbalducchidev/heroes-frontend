@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CreateHeroDto, Hero, UpdateHeroDto } from '../models/heroes.model';
-import { of } from 'rxjs';
+import { CreateHeroDto, Hero, HeroesDto, UpdateHeroDto } from '../models/heroes.model';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +23,37 @@ export class HeroesService {
     { id: 13, name: 'Wasp', description: 'Heroína que se encoge y tiene alas.' },
     { id: 14, name: 'Catwoman', description: 'Ladrona ágil con encanto felino.' },
     { id: 15, name: 'Venom', description: 'Simbionte alienígena con gran poder.' }
-  ]
+  ];
 
-  constructor() { }
+  filteredHeroes: Hero[] = [];
 
-  getAllHeroes = () => {
-    return of(this.heroes);
+  constructor() {
+    this.filteredHeroes = [...this.heroes];
+  }
+
+  getAllHeroes = (page: number = 1, name?: string, pagination?: boolean): Observable<HeroesDto> => {
+
+    const limit = 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+
+
+    if (name) {
+      this.filteredHeroes = this.heroes.filter(hero => hero.name.toLowerCase().includes(name.toLowerCase()));
+      console.log(this.filteredHeroes, 'FILTEERrr');
+
+    } else if (!pagination) {
+      this.filteredHeroes = [...this.heroes];
+    }
+
+    const paginatedHeroes = this.filteredHeroes.slice(startIndex, endIndex);
+
+    return of({
+      heroes: paginatedHeroes,
+      currentPage: page,
+      totalHeroes: this.heroes.length
+    });
   }
 
   getHeroById = (id: number) => {
@@ -36,7 +61,6 @@ export class HeroesService {
     if (hero) {
       return of(hero);
     } else return null;
-
   }
 
   getFilteredHeroes = (name: string) => {
@@ -55,7 +79,6 @@ export class HeroesService {
     const index = this.heroes.findIndex(h => h.id === hero.id);
     this.heroes[index] = hero;
     return of(hero);
-
   }
 
   deleteHero = (id: number) => {
