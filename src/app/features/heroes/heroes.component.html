@@ -12,19 +12,6 @@
   </div>
   <div>
     <div class="example-container mat-elevation-z8">
-      <!-- @if (isLoadingResults || isRateLimitReached) {
-      <div class="example-loading-shade">
-        @if (isLoadingResults) {
-        <mat-spinner></mat-spinner>
-        } @if (isRateLimitReached) {
-        <div class="example-rate-limit-reached">
-          GitHub's API rate limit has been reached. It will be reset in one
-          minute.
-        </div>
-        }
-      </div>
-      } -->
-
       <div class="example-container__example-table-container">
         <table mat-table [dataSource]="filteredHeroes" class="example-table">
           <ng-container matColumnDef="id">

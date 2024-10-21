@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestro
 import { ButtonComponent } from '../../shared/components/button/button.component';
 import { HeroesFilterComponent } from '../../shared/components/heroes-filter/heroes-filter.component';
 import { MatTableModule } from '@angular/material/table';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Hero, UpdateHeroDto } from '../../models/heroes.model';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -12,12 +11,13 @@ import { Router } from '@angular/router';
 import { HeroesService } from '../../services/heroes.service';
 import { retry, Subscription } from 'rxjs';
 import { CapitalizePipe } from '../../pipes/capitalize.pipe';
+import { LoaderService } from '../../services/loader.service';
 
 
 @Component({
   selector: 'app-heroes',
   standalone: true,
-  imports: [MatProgressSpinnerModule, MatTableModule, MatPaginatorModule, ButtonComponent, HeroesFilterComponent, MatDialogModule, CapitalizePipe],
+  imports: [MatTableModule, MatPaginatorModule, ButtonComponent, HeroesFilterComponent, MatDialogModule, CapitalizePipe],
   templateUrl: './heroes.component.html',
   styleUrl: './heroes.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,9 +29,12 @@ export class HeroesComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   readonly dialog = inject(MatDialog);
   private _heroesService = inject(HeroesService);
+  private _loaderService = inject(LoaderService);
   private cdr = inject(ChangeDetectorRef);
   private subscriptions: Subscription = new Subscription();
   private filteredHeroesSubscription: Subscription | undefined = new Subscription();
+
+  // isLoading$ = this._loaderService.isLoading$;
 
   displayedColumns: string[] = ['id', 'name', 'actions'];
 
@@ -68,33 +71,50 @@ export class HeroesComponent implements OnInit, OnDestroy {
   }
 
   createHero = (name: string, description: string) => {
-    this._heroesService.createHero({ name, description }).pipe(
-      retry(3)
-    ).subscribe(() => {
-      this.getHeroes(this.currentPage);
-      this.filteredHeroes = [...this.filteredHeroes];
-      this.cdr.detectChanges();
-    })
+    this.handleIsLoading(true);
+    setTimeout(() => {
+      this._heroesService.createHero({ name, description }).pipe(
+        retry(3)
+      ).subscribe(() => {
+        this.getHeroes(this.currentPage);
+        this.filteredHeroes = [...this.filteredHeroes];
+        this.cdr.detectChanges();
+        this.handleIsLoading(false);
+      })
+    }, 1000); // Simulate a delay of 1 second
+
   }
 
   updateHero = (name: string, description: string, id: number) => {
-    this._heroesService.updateHero({ name, description, id }).pipe(
-      retry(3)
-    ).subscribe(() => {
-      this.getHeroes(this.currentPage);
-      this.filteredHeroes = [...this.filteredHeroes];
-      this.cdr.detectChanges();
-    })
+    this.handleIsLoading(true);
+
+    setTimeout(() => {
+      this._heroesService.updateHero({ name, description, id }).pipe(
+        retry(3)
+      ).subscribe(() => {
+        this.getHeroes(this.currentPage);
+        this.filteredHeroes = [...this.filteredHeroes];
+        this.cdr.detectChanges();
+        this.handleIsLoading(false);
+
+      })
+    }, 1000);
   }
 
   deleteHero = (id: number) => {
-    this._heroesService.deleteHero(id).pipe(
-      retry(3)
-    ).subscribe(() => {
-      this.getHeroes(this.currentPage);
-      this.filteredHeroes = [...this.filteredHeroes];
-      this.cdr.detectChanges();
-    })
+    this.handleIsLoading(true);
+
+    setTimeout(() => {
+      this._heroesService.deleteHero(id).pipe(
+        retry(3)
+      ).subscribe(() => {
+        this.getHeroes(this.currentPage);
+        this.filteredHeroes = [...this.filteredHeroes];
+        this.cdr.detectChanges();
+        this.handleIsLoading(false);
+
+      })
+    }, 1000);
   }
 
   openCreateModal = (action: 'create') => {
@@ -149,7 +169,6 @@ export class HeroesComponent implements OnInit, OnDestroy {
 
   filterHeroes = (name: string = '') => {
     this.getHeroes(this.currentPage, name);
-    console.log(name, 'FILTEER');
     this.goToFirstPage();
 
   }
@@ -160,5 +179,9 @@ export class HeroesComponent implements OnInit, OnDestroy {
 
   goToFirstPage() {
     this.paginator.firstPage();
+  }
+
+  handleIsLoading = (isLoading: boolean) => {
+    this._loaderService.handleisLoading(isLoading);
   }
 }
