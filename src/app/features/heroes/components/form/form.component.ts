@@ -53,7 +53,11 @@ export class FormComponent implements OnInit {
   }
 
   submitForm = () => {
-    this.dialogRef.close(this.heroForm.value);
+    if (this.heroForm.valid) {
+      this.dialogRef.close(this.heroForm.value);
+    } else {
+      console.log('Formulario inválido.');
+    }
   }
 
   cancel = () => {
