@@ -9,7 +9,7 @@ import { FormComponent } from './components/form/form.component';
 import { MessageComponent } from '../../shared/components/message/message.component';
 import { Router } from '@angular/router';
 import { HeroesService } from '../../services/heroes.service';
-import { retry, Subscription } from 'rxjs';
+import { catchError, retry, Subscription, throwError } from 'rxjs';
 import { CapitalizePipe } from '../../pipes/capitalize.pipe';
 import { LoaderService } from '../../services/loader.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -33,11 +33,11 @@ export class HeroesComponent implements OnInit, OnDestroy {
   private _heroesService = inject(HeroesService);
   private _loaderService = inject(LoaderService);
   private cdr = inject(ChangeDetectorRef);
-  private getHeroSubscription: Subscription = new Subscription();
-  private createHeroSubscription: Subscription = new Subscription();
-  private updateHeroSubscription: Subscription = new Subscription();
-  private deleteHeroSubscription: Subscription = new Subscription();
-  private filteredHeroesSubscription: Subscription | undefined = new Subscription();
+  protected getHeroSubscription: Subscription = new Subscription();
+  protected createHeroSubscription: Subscription = new Subscription();
+  protected updateHeroSubscription: Subscription = new Subscription();
+  protected deleteHeroSubscription: Subscription = new Subscription();
+  protected filteredHeroesSubscription: Subscription | undefined = new Subscription();
 
   displayedColumns: string[] = ['id', 'name', 'actions'];
   heroes: Hero[] = [];
@@ -98,6 +98,7 @@ export class HeroesComponent implements OnInit, OnDestroy {
         this.openSnackBar('Héroe creado', 'Ok');
       })
     }, 1000); // Simulate a delay of 1 second
+
   }
 
   updateHero = (name: string, description: string, id: number) => {
