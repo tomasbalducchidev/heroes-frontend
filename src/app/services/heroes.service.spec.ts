@@ -1,9 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { HeroesService } from './heroes.service';
-import { HeroesDto } from '../models/heroes.model';
+import { Hero, HeroesDto } from '../models/heroes.model';
 
 describe('HeroesService', () => {
   let service: HeroesService;
+
+  const mockHeroes: Hero[] = [
+    { id: 1, name: 'Superman', description: 'Strong' },
+    { id: 2, name: 'Batman', description: 'Smart' },
+    { id: 3, name: 'Wonder Woman', description: 'Brave' },
+  ];
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
@@ -53,5 +59,24 @@ describe('HeroesService', () => {
       expect(response.totalHeroes).toBe(service.heroes.length);
       done();
     });
+  });
+
+  it('should return the hero when a valid id is provided', () => {
+    service.heroes = mockHeroes;
+
+    const heroId = 1;
+    const result = service.getHeroById(heroId);
+
+    expect(result).toBeTruthy();
+    result?.subscribe(hero => {
+      expect(hero).toEqual(mockHeroes[0]);
+    });
+  });
+
+  it('should return null when an invalid id is provided', () => {
+    const heroId = 99;
+    const result = service.getHeroById(heroId);
+
+    expect(result).toBeNull();
   });
 });
