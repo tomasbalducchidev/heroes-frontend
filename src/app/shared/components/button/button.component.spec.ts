@@ -10,7 +10,7 @@ describe('ButtonComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ButtonComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ButtonComponent);
     component = fixture.componentInstance;
@@ -19,5 +19,13 @@ describe('ButtonComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should emit handleClickEvent when handleClick is called', () => {
+    spyOn(component.handleClickEvent, 'emit');
+
+    component.handleClick();
+
+    expect(component.handleClickEvent.emit).toHaveBeenCalled();
   });
 });
