@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormComponent } from './form.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { By } from '@angular/platform-browser';
 
 describe('FormComponent', () => {
   let component: FormComponent;
@@ -49,4 +50,38 @@ describe('FormComponent', () => {
     component.submitForm();
     expect((component.dialogRef as any).close).not.toHaveBeenCalled();
   });
+
+  it('should display correct title and button based on action (create)', () => {
+    component.data.action = 'create';
+    fixture.detectChanges();
+
+    const title = fixture.debugElement.query(By.css('h2')).nativeElement;
+    const submitButton = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
+
+    expect(title.textContent).toContain('Crear Héroe');
+    expect(submitButton.textContent).toContain('Crear');
+  });
+
+  it('should enable/disable the submit button based on form validity', () => {
+    const submitButton = fixture.debugElement.query(By.css('button[type="submit"]')).nativeElement;
+
+    expect(submitButton.disabled).toBeTrue();
+
+    component.heroForm.controls['heroName'].setValue('Superman');
+    component.heroForm.controls['heroDescription'].setValue('El hombre de acero');
+    fixture.detectChanges();
+
+    expect(submitButton.disabled).toBeFalse();
+  });
+
+  it('should close the dialog with "cancel"', () => {
+    const dialogRefMock = { close: jasmine.createSpy('close') };
+
+    component.dialogRef = dialogRefMock as any;
+
+    component.cancel();
+
+    expect(dialogRefMock.close).toHaveBeenCalledWith('cancel');
+  });
+
 });
